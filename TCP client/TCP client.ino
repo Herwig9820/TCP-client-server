@@ -234,7 +234,8 @@ void sendRequestToServer() {
 
     execFlowPulses( 2 );                                                // flag
 
-    client.println( messageCounter );                                   // send request to server
+    int n = client.println( messageCounter );
+    if ( n != 9 ) { Serial.print( "===================================" ); Serial.println( n ); }
 
     sprintf( s200, "request sent: %ld at ", messageCounter );
     Serial.print( s200 );

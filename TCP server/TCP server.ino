@@ -195,8 +195,8 @@ void connectToClient() {
     default:                                                            // client was already connected
         digitalWrite(10, HIGH);
         if ( !client.connected() ) {                                    // client still connected ?
-            Serial.print( "Client disconnected (or connection lost) at " );
-            Serial.println( (float) millis() / 1000. );
+            ////Serial.print( "Client disconnected (or connection lost) at " );
+            ////Serial.println( (float) millis() / 1000. );
 
             changeConnectionState( conn_6_stopClientNow );              // connection lost or client side disconnected: stop connection
         }
@@ -206,14 +206,14 @@ void connectToClient() {
 
     // try connecting client now
     if ( (ConnTriesAfterStateChange <= 20) && reportToSerialMonitor ) {
-        Serial.print( "<" );                                            // demonstrate 'processor not hanging'    
+        ////Serial.print( "<" );                                            // demonstrate 'processor not hanging'    
     }
 
     digitalWrite( 10, HIGH );
     client = server.available();                                        // attemp to connect to client
     digitalWrite( 10, LOW );
     if ( (ConnTriesAfterStateChange++ <= 20) && reportToSerialMonitor ) {
-        Serial.print( (ConnTriesAfterStateChange != 21) ? ">" : "...>" ); // stop reporting 
+        ////Serial.print( (ConnTriesAfterStateChange != 21) ? ">" : "...>" ); // stop reporting 
     }
 
     digitalWrite( 10, HIGH );
@@ -221,8 +221,8 @@ void connectToClient() {
         reportToSerialMonitor = true;                                   // may report to serial monitor again
         reportingStartTime = millis();                                  // re-trigger
 
-        Serial.print( "\nconnected to client at " );
-        Serial.println( (float) millis() / 1000. );
+        ////Serial.print( "\nconnected to client at " );
+        ////Serial.println( (float) millis() / 1000. );
 
         digitalWrite( 13, HIGH );                                       // flag 'client connected'
         clientConnections++;                                            // total connection cycles
@@ -259,8 +259,8 @@ void assembleClientRequest() {
         Serial.print( "]" );
 
         if ( c [ 0 ] == '\n' ) {                                        // client request has been read completely now
-            Serial.print( "\nrequest read at " );
-            Serial.println( (float) millis() / 1000. );
+            ////Serial.print( "\nrequest read at " );
+            ////Serial.println( (float) millis() / 1000. );
 
             changeConnectionState( conn_5_requestReceived );            // may send server response now
         }
@@ -269,8 +269,8 @@ void assembleClientRequest() {
     else if ( startReadingAt + readingTimeOut < millis() ) {            // no character available and time out reached
         errors++;
 
-        Serial.print( "\n**** Error: timeout while reading request at " );
-        Serial.println( (float) millis() / 1000. );
+        ////Serial.print( "\n**** Error: timeout while reading request at " );
+        ////Serial.println( (float) millis() / 1000. );
 
         changeConnectionState( conn_6_stopClientNow );                  // stop connection to client
     }
@@ -284,10 +284,11 @@ void assembleClientRequest() {
 void sendResponseToClient() {
     if ( connectionState != conn_5_requestReceived ) { return; }        // anything to send for the moment ?
 
-    client.print( clientRequest );
+    int n = client.print( clientRequest );
+    if (n != 9) {Serial.print("==================================="); Serial.println(n);}
 
-    Serial.print( "response sent at " );
-    Serial.println( (float) millis() / 1000. );
+    ////Serial.print( "response sent at " );
+    ////Serial.println( (float) millis() / 1000. );
 
     strcpy( clientRequest, "" );                                        // init 
     startReadingAt = millis();                                          // timestamp: start waiting for client request
@@ -302,15 +303,15 @@ void sendResponseToClient() {
 void stopTCPconnection() {
     if ( connectionState != conn_6_stopClientNow ) { return; }          // do it now ?
 
-    Serial.print( "stopping... " );
+    ////Serial.print( "stopping... " );
     client.stop();
 
     // provide a minimum delay between client stop and re-connect 
     clientStopTime = millis();                                          // record AFTER client.stop()
     digitalWrite( 13, LOW );
 
-    Serial.print( "disconnected from client at " );
-    Serial.println( (float) millis() / 1000. );
+    ////Serial.print( "disconnected from client at " );
+    ////Serial.println( (float) millis() / 1000. );
 
     changeConnectionState( conn_7_report );                             // may now print out to serial monitor
 }
@@ -349,18 +350,18 @@ void heartbeat() {
         if ( reportingStartTime + reportingTimeout > millis() ) {       // report heartbeat to serial monitor ?
             if ( (connectionState == conn_2_wifiConnected) ||
                 (connectionState == conn_4_clientConnected) ) {
-                Serial.println();
+                ////Serial.println();
             }
             sprintf( s200, "******** Heartbeat - connection state is S%d at ",
                 connectionState );
-            Serial.print( s200 );                                       // print current connection state
-            Serial.println( (float) millis() / 1000. );
+            ////Serial.print( s200 );                                       // print current connection state
+            ////Serial.println( (float) millis() / 1000. );
             lastHeartbeat = millis();
         }
         else if ( reportToSerialMonitor ) {                             // was still reporting
             reportToSerialMonitor = false;                              // stop reporting
-            Serial.print( "\n\nNo connection since a while: stopping reporting at " );
-            Serial.println( (float) millis() / 1000. );
+            ////Serial.print( "\n\nNo connection since a while: stopping reporting at " );
+            ////Serial.println( (float) millis() / 1000. );
 
         }
     }

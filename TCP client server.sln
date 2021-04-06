@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31129.286
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TCP client server", "TCP client server.vcxproj", "{C5F80730-F44F-4478-BDAE-6634EFC2CA88}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TCP client", "TCP client\TCP client.vcxproj", "{7771E5B1-6E65-4615-8BBF-B542D7BA65AD}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TCP server", "TCP server\TCP server.vcxproj", "{48E81165-5949-41A9-ACC1-F4A02BC4EA5B}"
@@ -15,10 +13,6 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Debug|x86.ActiveCfg = Debug|Win32
-		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Debug|x86.Build.0 = Debug|Win32
-		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Release|x86.ActiveCfg = Release|Win32
-		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Release|x86.Build.0 = Release|Win32
 		{7771E5B1-6E65-4615-8BBF-B542D7BA65AD}.Debug|x86.ActiveCfg = Debug|Win32
 		{7771E5B1-6E65-4615-8BBF-B542D7BA65AD}.Debug|x86.Build.0 = Debug|Win32
 		{7771E5B1-6E65-4615-8BBF-B542D7BA65AD}.Release|x86.ActiveCfg = Release|Win32
