@@ -193,8 +193,8 @@ void connectToClient() {
         break;                                                          // ... and attempt client connection again
 
     default:                                                            // client was already connected
-        execFlowPulses( 1 );
         digitalWrite( 10, HIGH );
+        execFlowPulses( 1 );
         if ( !client.connected() ) {                                    // client still connected ?
             Serial.print( "Client disconnected (or connection lost) at " );
             Serial.println( (float) millis() / 1000. );
@@ -210,16 +210,16 @@ void connectToClient() {
         Serial.print( "<" );                                            // demonstrate 'processor not hanging'    
     }
 
-    execFlowPulses( 3 );
     digitalWrite( 10, HIGH );
+    execFlowPulses( 3 );
     client = server.available();                                        // attemp to connect to client
     digitalWrite( 10, LOW );
     if ( (ConnTriesAfterStateChange++ <= 20) && reportToSerialMonitor ) {
         Serial.print( (ConnTriesAfterStateChange != 21) ? ">" : "...>" ); // stop reporting 
     }
 
-    execFlowPulses( 3 );
     digitalWrite( 10, HIGH );
+    execFlowPulses( 3 );
     if ( client.connected() ) {
         reportToSerialMonitor = true;                                   // may report to serial monitor again
         reportingStartTime = millis();                                  // re-trigger
@@ -247,8 +247,8 @@ void assembleClientRequest() {
 
     char c [ 2 ] = "";
 
-    execFlowPulses( 2 );
     digitalWrite( 10, HIGH );
+    execFlowPulses( 2 );
 
     if ( client.available() ) {                                         // characters available: read one
         Serial.print( "[" );                                            // send character to serial monitor, surrounded by []
