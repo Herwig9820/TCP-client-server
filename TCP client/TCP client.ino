@@ -47,16 +47,13 @@ const unsigned long wifiConnectDelay { 5000 };                          // minim
 const unsigned long clientConnectDelay { 100 };                         // minimum delay between 2 connection attempts or stopping client and nect connection attempt
 const unsigned long readingTimeOut { 10000 };                           // timeout while reading from server
 const unsigned long heartbeatPeriod { 1000 };                           // time between two heartbeats
-const unsigned long reportingTimeout { 120000 };                        // stop reporting to serial monitor after timeout when connection lost 
 
 unsigned long messageCounter { 1230001 };                               // incrementing value to be sent as client request to server
 unsigned long errors { 0 };                                             // error counter
 unsigned long startReadingAt { 0 }, lastHeartbeat { 0 };                // timestamps in milliseconds
 unsigned long wifiConnectTime { 0 }, clientStopTime { 0 };              // timestamps in milliseconds
 unsigned long wifiConnections { 0 }, clientConnections { 0 };           // counters
-unsigned long reportingStartTime { 0 };                                 // start time for reporting heartbeat and connection attempts to serial monitor 
 
-bool reportToSerialMonitor { true };                                    // controls reporting to serial monitor (heartbeat and connection attempts only)
 int connectionState { conn_0_wifiConnectNow };                          // controls execution
 
 char s200 [ 200 ] { "" };                                               // general purpose 
@@ -76,7 +73,6 @@ void lastConnectionReport();                                            // send 
 void heartbeat();                                                       // 1 second heartbeat: print current connection state
 
 void reportWifiStatus();                                                // report WiFi status to serial monitor
-void execFlowPulses( byte pulses );                                     // provide cues (using an oscilloscope) indicating which procedure is next to be executed
 void changeConnectionState( int newState );                             // change connection stateand report to serial monitor
 
 
@@ -140,9 +136,6 @@ void connectToWiFi() {
 
     // try connecting to wifi now
     Serial.print( "..." );
-    reportToSerialMonitor = true;                                       // may report to serial monitor again (even if wifi connection fails)
-    reportingStartTime = millis();                                      // re-trigger
-
     WiFi.disconnect();
     WiFi.end();
     if ( WiFi.begin( ssid, pass ) == WL_CONNECTED ) {                   // success
@@ -156,7 +149,6 @@ void connectToWiFi() {
     }
     else {
         Serial.print( "..." );                                          // waiting for next wifi connection attempt
-
         changeConnectionState( conn_1_wifiDelayConnection );            // init (in case connection fails, try again after delay)
     }
 
@@ -170,8 +162,6 @@ void connectToWiFi() {
 
 void connectToServer() {
     if ( connectionState < conn_2_wifiConnected ) { return; }           // no wifi yet: nothing to do
-
-    execFlowPulses( 1 );                                                // flag
 
     switch ( connectionState ) {                                        // state
     case conn_2_wifiConnected:                                          // no client connection yet
@@ -203,9 +193,6 @@ void connectToServer() {
     Serial.println( (float) millis() / 1000. );
 
     if ( client.connect( serverAddress, serverPort ) ) {
-        reportToSerialMonitor = true;                                   // may report to serial monitor again
-        reportingStartTime = millis();                                  // re-trigger
-
         Serial.print( "connected to server at " );
         Serial.println( (float) millis() / 1000. );
 
@@ -232,8 +219,6 @@ void connectToServer() {
 void sendRequestToServer() {
     if ( connectionState != conn_4_clientConnected ) { return; }        // send request now ?
 
-    execFlowPulses( 2 );                                                // flag
-
     int n = client.println( messageCounter );
     if ( n != 9 ) { Serial.print( "===================================" ); Serial.println( n ); }
 
@@ -253,8 +238,6 @@ void sendRequestToServer() {
 
 void assembleServerResponse() {
     if ( connectionState != conn_5_requestSent ) { return; }            // currently expecting data ?
-
-    execFlowPulses( 3 );                                                // flag
 
     char c [ 2 ] = "";
 
@@ -301,8 +284,6 @@ void assembleServerResponse() {
 void stopTCPconnection() {
     if ( connectionState != conn_6_stopClientNow ) { return; }          // do it now ?
 
-    execFlowPulses( 4 );                                                // flag
-
     Serial.print( "stopping... " );
     client.stop();
 
@@ -323,8 +304,6 @@ void stopTCPconnection() {
 void lastConnectionReport() {
     if ( connectionState != conn_7_report ) { return; }                 // do it now ?
 
-    execFlowPulses( 5 );                                                // flag
-
     sprintf( s200, "Connections WiFi: %ld, client: %ld. Errors: %ld at ",
         wifiConnections, clientConnections, errors );
     Serial.print( s200 );
@@ -344,27 +323,16 @@ void lastConnectionReport() {
 // *** print current connection info at every heartbeat ***
 
 void heartbeat() {
-    execFlowPulses( 0 );                                                // flag every passage 
-
     if ( lastHeartbeat + heartbeatPeriod < millis() ) {                 // heartbeat ?
-
-        if ( reportingStartTime + reportingTimeout > millis() ) {       // report heartbeat to serial monitor ?
-            if ( (connectionState == conn_2_wifiConnected) ||
-                (connectionState == conn_4_clientConnected) ) {
-                Serial.println();
-            }
-            sprintf( s200, "******** Heartbeat - connection state is S%d at ",
-                connectionState );
-            Serial.print( s200 );                                       // print current connection state
-            Serial.println( (float) millis() / 1000. );
-            lastHeartbeat = millis();
+        if ( (connectionState <= conn_2_wifiConnected) ||
+            (connectionState == conn_4_clientConnected) ) {
+            Serial.println();
         }
-        else if ( reportToSerialMonitor ) {                             // was still reporting
-            reportToSerialMonitor = false;                              // stop reporting
-            Serial.print( "\n\nNo connection since a while: stopping reporting at " );
-            Serial.println( (float) millis() / 1000. );
-
-        }
+        sprintf( s200, "******** Heartbeat - connection state is S%d at ",
+            connectionState );
+        Serial.print( s200 );                                           // print current connection state
+        Serial.println( (float) millis() / 1000. );
+        lastHeartbeat = millis();
     }
 }
 
@@ -381,22 +349,6 @@ void reportWifiStatus() {
     Serial.print( "signal strength (RSSI):" );
     Serial.print( rssi );
     Serial.println( " dBm\n" );
-}
-
-
-
-// *** provide cues (using an oscilloscope) indicating which procedure is next to be executed
-
-void execFlowPulses( byte pulses ) {                                    // pin 12: procedure execution cue, pin 11: same, for heartbeat procedure
-    int pin { 12 };
-    if ( pulses == 0 ) {
-        pulses = 1;
-        pin = 11;
-    }
-    for ( int i = 1; i <= pulses; i++ ) {                               // number of pulses indicates which procedure will execute
-        digitalWrite( pin, HIGH );
-        digitalWrite( pin, LOW );
-    }
 }
 
 

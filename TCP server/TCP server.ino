@@ -353,7 +353,7 @@ void heartbeat() {
         ConnTriesAfterStateChange = 0;                                  // yes: may report client connection attempts to serial monitor again 
 
         if ( reportingStartTime + reportingTimeout > millis() ) {       // report heartbeat to serial monitor ?
-            if ( (connectionState == conn_2_wifiConnected) ||
+            if ( (connectionState <= conn_2_wifiConnected) ||
                 (connectionState == conn_4_clientConnected) ) {
                 Serial.println();
             }
@@ -402,7 +402,7 @@ void execFlowPulses( byte pulses ) {                                    // pin 1
     for ( int i = 1; i <= pulses; i++ ) {                               // number of pulses indicates which procedure will execute
         digitalWrite( pin, HIGH );
         m = micros();
-        while(m + 20 > micros() ) {}
+        while ( m + 20 > micros() ) {}
         digitalWrite( pin, LOW );
         m = micros();
         while ( m + 20 > micros() ) {}
