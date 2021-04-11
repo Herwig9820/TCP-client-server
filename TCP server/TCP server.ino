@@ -30,7 +30,7 @@
 enum ConnectionState_type {
     conn_0_wifiConnectNow,                                              // attempt to connect wifi
     conn_1_wifiDelayConnection,                                         // waiting for next attempt to connect wifi (after timeout) 
-    conn_2_wifiConnected,                                               // attemp to connect to client 
+    conn_2_wifiConnected,                                               // attempt to connect to client 
     conn_3_clientDelayConnection,                                       // wait for next attempt to connect to client (after timeout)
     conn_4_clientConnected,                                             // server connected to client (waiting for client request)
     conn_5_requestReceived,                                             // client request received: send server response
