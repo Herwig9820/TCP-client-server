@@ -3,14 +3,34 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
+
+
+# added by Herwig Taveirne
+secrets.h
+/__vm/
+/TCP server/secrets.h
+/TCP server/*.vcxproj
+/TCP server/*.filters
+/TCP server/__vm
+/TCP server/Debug
+/TCP server/Release
+/TCP server/src
+/TCP client/secrets.h
+/TCP client/*.vcxproj
+/TCP client/*.filters
+/TCP client/__vm
+/TCP client/Debug
+/TCP client/Release
+/TCP client/src
+
+
 # User-specific files
 *.rsuser
 *.suo
 *.user
 *.userosscache
 *.sln.docstates
-*/__vm/
-secrets.h
+
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
