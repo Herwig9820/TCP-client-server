@@ -40,7 +40,8 @@ enum ConnectionState_type {
 char ssid [] = SECRET_SSID;                                             // network SSID
 char pass [] = SECRET_PASS;                                             // network password
 
-const IPAddress serverAddress( 192, 168, 2, 5 );                        // server IP to connect to
+const IPAddress serverAddress( 213, 119, 113, 150 );  // telenet router////                       // server IP to connect to                  
+//const IPAddress serverAddress( 192, 168, 2, 5 );                        // server IP to connect to
 const int serverPort = 4080;                                            // server port 
 
 const unsigned long wifiConnectDelay { 5000 };                          // minimum delay between two attempts to connect to wifi
