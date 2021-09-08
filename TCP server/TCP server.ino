@@ -37,19 +37,19 @@ enum ConnectionState_type {
     conn_6_stopClientNow,                                               // stop client connection
     conn_7_report                                                       // send info about last connection cycle to serial monitor
 };
-#ifdef LOCATION
-long aaa = 1;
-#endif
 
 char ssid [] = SECRET_SSID;                                             // network SSID
 char pass [] = SECRET_PASS;                                             // network password
 
-const IPAddress serverAddress( 213,119, 113, 150);  // telenet router////
-//const IPAddress serverAddress( 192, 168, 2, 5 );                        // static server IP 
+#if (LOCATION == 1)
+const IPAddress serverAddress( 213,119, 113, 150);                      // telenet router (Anemonenstraat): static server IP
+#elif (LOCATION == 2) 
+const IPAddress serverAddress( 192, 168, 1, 45 );                        // BBOX router (Vaison): static server IP 
+#endif
 const int serverPort = 4080;                                            // server port 
 
 const unsigned long wifiConnectDelay { 5000 };                          // minimum delay between two attempts to connect to wifi (milliseconds)
-const unsigned long clientConnectDelay { 100 };                         // minimum delay between stopping and connecting client
+const unsigned long clientConnectDelay { 1000 };                         // minimum delay between stopping and connecting client
 const unsigned long readingTimeOut { 10000 };                           // timeout while reading from client
 const unsigned long heartbeatPeriod { 1000 };                           // time between two heartbeats
 const unsigned long reportingTimeout { 120000 };                        // stop reporting to serial monitor after timeout when connection lost 
