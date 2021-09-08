@@ -37,6 +37,9 @@ enum ConnectionState_type {
     conn_6_stopClientNow,                                               // stop client connection
     conn_7_report                                                       // send info about last connection cycle to serial monitor
 };
+#ifdef LOCATION
+long aaa = 1;
+#endif
 
 char ssid [] = SECRET_SSID;                                             // network SSID
 char pass [] = SECRET_PASS;                                             // network password
